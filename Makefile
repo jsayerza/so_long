@@ -15,11 +15,11 @@ MLX_LIB = $(MLX_DIR)/libmlx_Linux.a
 
 HEADER = $(INCLUDES_DIR)/so_long.h
 
-SRCS =	#src/so_long.c src/game_utils.c \
-#	src/map_parser.c src/map_utils.c src/map_checks.c src/line_utils.c \
-#	src/game_init.c \
-#	src/player.c src/wall_visible.c src/sprites.c src/sprites_free.c \
-#	src/key_handler.c src/draw.c \
+SRCS =	src/so_long.c src/game_utils.c \
+	src/map_parser.c src/map_utils.c src/map_checks.c src/line_utils.c \
+	src/game_init.c \
+	src/player.c src/wall_visible.c src/sprites.c src/sprites_free.c \
+	src/key_handler.c src/draw.c \
 
 BONUS_SRCS = src_bonus/so_long.c src_bonus/game_utils.c \
 	src_bonus/map_parser.c src_bonus/map_utils.c src_bonus/map_checks.c src_bonus/line_utils.c \
@@ -47,19 +47,19 @@ PARAMS = "./maps/map0.ber"
 all: $(NAME) $(EXE) $(MLX_LIB)
 
 # Regla para construir el archivo estático
-$(NAME): $(BONUS_OBJ) $(GNL_OBJ) $(FTPF_OBJ)
-	@ar rcs $(NAME) $(BONUS_OBJ) $(GNL_OBJ) $(FTPF_OBJ)
+$(NAME): $(OBJ) $(GNL_OBJ) $(FTPF_OBJ)
+	@ar rcs $(NAME) $(OBJ) $(GNL_OBJ) $(FTPF_OBJ)
 
 # Regla para construir el ejecutable
-$(EXE): $(BONUS_OBJ) $(GNL_OBJ) $(FTPF_OBJ)
-	$(CC) $(CFLAGS) -o $(EXE) $(BONUS_OBJ) $(GNL_OBJ) $(FTPF_OBJ) $(INCLUDES) $(MLX_FLAGS) #-fsanitize=address
+$(EXE): $(OBJ) $(GNL_OBJ) $(FTPF_OBJ)
+	$(CC) $(CFLAGS) -o $(EXE) $(OBJ) $(GNL_OBJ) $(FTPF_OBJ) $(INCLUDES) $(MLX_FLAGS) #-fsanitize=address
 
 $(MLX_LIB):
 	@make -C $(MLX_DIR)
 
 # Regla para compilar con las funciones bonus e incluirlas en el archivo estático
-bonus: $(BONUS_OBJ) $(GNL_OBJ) $(FTPF_OBJ)
-	@ar rcs $(NAME) $(BONUS_OBJ) $(GNL_OBJ) $(FTPF_OBJ)
+bonus: $(OBJ) $(BONUS_OBJ) $(GNL_OBJ) $(FTPF_OBJ)
+	@ar rcs $(NAME) $(OBJ) $(BONUS_OBJ) $(GNL_OBJ) $(FTPF_OBJ)
 
 # Regla para limpiar archivos objeto y el archivo estático
 clean:
