@@ -1,4 +1,6 @@
 *.swp
+*.swn
+*.swo
 *.txt
 *.pdf
 so_long/mlx
