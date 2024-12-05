@@ -6,7 +6,7 @@
 /*   By: jsayerza <jsayerza@student.42barcelona.fr> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 09:00:00 by jsayerza          #+#    #+#             */
-/*   Updated: 2024/12/01 10:41:25 by jsayerza         ###   ########.fr       */
+/*   Updated: 2024/12/05 12:24:03 by jsayerza         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ int	line_allocate(t_vars *vars, t_point pos)
 	if (!vars->map.tiles[pos.y])
 	{
 		freer(vars);
-		perror("Error: Couldn't allocate lines in map.tiles.\n");
+		perror("Error: Couldn't allocate lines in map.tiles data.\n");
 		exit(1);
 		return (0);
 	}

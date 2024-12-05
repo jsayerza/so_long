@@ -1,102 +1,105 @@
-# Variables
-NAME = libso_long.a
-CC = cc
-CFLAGS = -Wall -Werror -Wextra -O3 -g #-fsanitize=address
-#CFLAGS = -O3 -g #-fsanitize=address
-INCLUDES = -Iincludes -Imlx
-INCLUDES_DIR = ./includes
-
-# Link X11 and MLX
-MLX_FLAGS = -Lmlx -lmlx_Linux -L/usr/lib -Imlx -lXext -lX11 -lm -lz
-
-# Paths
-MLX_DIR = ./mlx
-MLX_LIB = $(MLX_DIR)/libmlx_Linux.a
-
-HEADER = $(INCLUDES_DIR)/so_long.h
+NAME = so_long
+NAME_LIB = libso_long.a
+NAME_BONUS = so_long_bonus
 
 SRCS =	src/so_long.c src/game_utils.c \
 	src/map_parser.c src/map_utils.c src/map_checks.c src/line_utils.c \
 	src/game_init.c \
-	src/player.c src/wall_visible.c src/sprites.c src/sprites_free.c \
-	src/key_handler.c src/draw.c \
+	src/player.c src/wall_visible.c \
+	src/sprites.c src/sprites_free.c \
+	src/key_handler.c src/draw.c
 
-BONUS_SRCS = src_bonus/so_long.c src_bonus/game_utils.c \
+SRCS_BONUS = src_bonus/so_long.c src_bonus/game_utils.c \
 	src_bonus/map_parser.c src_bonus/map_utils.c src_bonus/map_checks.c src_bonus/line_utils.c \
 	src_bonus/game_init.c \
-	src_bonus/player.c src_bonus/wall_visible.c src_bonus/sprites.c src_bonus/sprites_free.c \
+	src_bonus/player.c src_bonus/wall_visible.c \
+	src_bonus/sprites.c src_bonus/sprites_free.c \
 	src_bonus/key_handler.c src_bonus/draw.c \
 	src_bonus/draw_enemy_bonus.c src_bonus/enemy_bonus.c src_bonus/enemy_init_bonus.c \
 	src_bonus/score_bonus.c \
-	src_bonus/sprites_bonus.c src_bonus/sprites_free_bonus.c \
+	src_bonus/sprites_bonus.c src_bonus/sprites_free_bonus.c
 
-GNL_SRC = gnl/get_next_line.c gnl/get_next_line_utils.c
-FTPF_SRC = ftpf/ft_printf.c ftpf/ft_printf_utils.c
+SRC_GNL =	gnl/get_next_line.c gnl/get_next_line_utils.c
+SRC_FTPF =	ftpf/ft_printf.c ftpf/ft_printf_utils.c
 
-# Object files
+MLX_DIR = ./mlx
+MLX_LIB = $(MLX_DIR)/libmlx_Linux.a
+MLX_FLAGS = -L$(MLX_DIR) -lmlx_Linux -L/usr/lib -Imlx -lXext -lX11 -lm -lz
+
+CC = cc
+CFLAGS = -Wall -Werror -Wextra -O3 -g -fsanitize=address
+INCLUDES = -Isrc -Isrc_bonus -Iftpf -Ignl -Imlx
+RM	= rm -f
+
 OBJ = $(SRCS:.c=.o)
-BONUS_OBJ = $(BONUS_SRCS:.c=.o)
-GNL_OBJ = $(GNL_SRC:.c=.o)
-FTPF_OBJ = $(FTPF_SRC:.c=.o)
+OBJ_BONUS = $(SRCS_BONUS:.c=.o)
+OBJ_GNL = $(SRC_GNL:.c=.o)
+OBJ_FTPF = $(SRC_FTPF:.c=.o)
 
-EXE = so_long
+HEADERS =	src/so_long.h src/structures.h
+HEADERS_BONUS = src_bonus/so_long.h src_bonus/structures.h
+HEADERS_UTILS =	gnl/get_next_line.h ftpf/ft_printf.h
 
 PARAMS = "./maps/map0.ber"
 
-# Regla por defecto: compila el archivo estático y el ejecutable
-all: $(NAME) $(EXE) $(MLX_LIB)
+%.o: %.c Makefile $(HEADERS) $(HEADERS_BONUS) $(HEADERS_UTILS)
+	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
-# Regla para construir el archivo estático
-$(NAME): $(OBJ) $(GNL_OBJ) $(FTPF_OBJ)
-	@ar rcs $(NAME) $(OBJ) $(GNL_OBJ) $(FTPF_OBJ)
+$(NAME): $(OBJ) $(OBJ_GNL) $(OBJ_FTPF)
+	@if [ ! -f "$(MLX_LIB)" ]; then \
+		echo "Building MLX library..."; \
+		make -C $(MLX_DIR); \
+	else \
+		echo "MLX library found."; \
+	fi
+	$(CC) $(CFLAGS) -o $(NAME) $(OBJ) $(OBJ_GNL) $(OBJ_FTPF) $(INCLUDES) $(MLX_FLAGS)
 
-# Regla para construir el ejecutable
-$(EXE): $(OBJ) $(GNL_OBJ) $(FTPF_OBJ)
-	$(CC) $(CFLAGS) -o $(EXE) $(OBJ) $(GNL_OBJ) $(FTPF_OBJ) $(INCLUDES) $(MLX_FLAGS) #-fsanitize=address
+$(NAME_BONUS): $(OBJ_BONUS) $(OBJ_GNL) $(OBJ_FTPF)
+	@if [ ! -f "$(MLX_LIB)" ]; then \
+		echo "Building MLX library..."; \
+		make -C $(MLX_DIR); \
+	else \
+		echo "MLX library found."; \
+	fi
+	$(CC) $(CFLAGS) -o $(NAME_BONUS) $(OBJ_BONUS) $(OBJ_GNL) $(OBJ_FTPF) $(INCLUDES) $(MLX_FLAGS)
 
-$(MLX_LIB):
-	@make -C $(MLX_DIR)
+all: $(NAME)
 
-# Regla para compilar con las funciones bonus e incluirlas en el archivo estático
-bonus: $(OBJ) $(BONUS_OBJ) $(GNL_OBJ) $(FTPF_OBJ)
-	@ar rcs $(NAME) $(OBJ) $(BONUS_OBJ) $(GNL_OBJ) $(FTPF_OBJ)
+bonus: $(NAME_BONUS)
 
-# Regla para limpiar archivos objeto y el archivo estático
 clean:
-	@rm -f $(OBJ) $(BONUS_OBJ) $(GNL_OBJ) $(FTPF_OBJ)
-	
-# Regla para limpiar todos los archivos generados por la compilación
+	make clean -C gnl
+	make clean -C ftpf
+	make clean -C mlx
+	$(RM) $(OBJ) $(OBJ_BONUS)
+
 fclean: clean
-	@rm -f $(NAME) $(EXE)
+	$(RM) $(NAME) $(NAME_BONUS) $(NAME_LIB)
 
 re: fclean all
 
-# Regla para compilar con información de depuración y ejecutar el programa
-lldb: fclean $(EXE)
-	lldb ./$(EXE) $(PARAMS)
-	
-# Regla para construir el archivo objeto
-%.o: %.c Makefile $(HEADER)
-	$(CC) $(CFLAGS) -c $< -o $@ $(INCLUDES)
+lldb: $(NAME)
+	lldb ./$(NAME) $(PARAMS)
 
-# Separate rule for GNL files
-gnl/%.o: gnl/%.c Makefile $(HEADER)
-	$(CC) $(CFLAGS) -c $< -o $@ $(INCLUDES)
+lldbbonus: $(NAME_BONUS)
+	lldb ./$(NAME_BONUS) $(PARAMS)
 
-# Regla para ejecutar el programa
 run:
-	@if [ -f "$(EXE)" ]; then \
+	@if [ -f "$(NAME)" ]; then \
 		clear; \
-		#echo "$(EXE) trobat!"; \
-		./$(EXE) $(PARAMS); \
+		./$(NAME) $(PARAMS); \
 	else \
-		echo "$(EXE) no trobat. Run 'make' abans"; \
+		echo "$(NAME) not found. Run 'make' first."; \
 	fi
 
+runbonus:
+	@if [ -f "$(NAME_BONUS)" ]; then \
+		clear; \
+		./$(NAME_BONUS) $(PARAMS); \
+	else \
+		echo "$(NAME_BONUS) not found. Run 'make bonus' first."; \
+	fi
 
 # Phony targets
-.PHONY: all clean fclean run lldb re bonus
-
-
-#valgrind -s --leak-check=full ./so_long
+.PHONY: $(NAME) $(NAME_BONUS) all clean fclean re run lldb bonus runbonus lldbbonus
 

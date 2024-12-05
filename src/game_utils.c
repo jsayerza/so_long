@@ -17,7 +17,7 @@ void	free_tiles(t_vars *vars)
 	size_t	i;
 
 	i = 0;
-	while (i < vars->map.height)
+	while (i < vars->map.height && vars->map.tiles[i] != NULL)
 	{
 		free(vars->map.tiles[i]);
 		vars->map.tiles[i] = NULL;
@@ -29,7 +29,8 @@ void	free_tiles(t_vars *vars)
 
 void	freer(t_vars *vars)
 {
-	free_tiles(vars);
+	if (vars->map.tiles != NULL)
+		free_tiles(vars);
 }
 
 int	win_close(t_vars *vars)

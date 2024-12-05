@@ -6,7 +6,7 @@
 /*   By: jsayerza <jsayerza@student.42barcelona.fr> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/01 10:14:00 by jsayerza          #+#    #+#             */
-/*   Updated: 2024/12/01 11:37:08 by jsayerza         ###   ########.fr       */
+/*   Updated: 2024/12/05 16:29:00 by jsayerza         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,10 +24,17 @@ int	ft_printchar(int c)
 
 int	ft_printstr(char const *str)
 {
+	int	i;
+
 	if (str == NULL)
 		return (write(1, "(null)", 6));
 	else
-		return (write(1, str, ft_strlen(str)));
+	{
+		i = 0;
+		while (str[i])
+			i++;
+		return (write(1, str, i));
+	}
 }
 
 int	ft_print_unsigned(unsigned int n)

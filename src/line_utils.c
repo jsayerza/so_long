@@ -31,7 +31,7 @@ int	line_allocate(t_vars *vars, t_point pos)
 	if (!vars->map.tiles[pos.y])
 	{
 		freer(vars);
-		perror("Error: Couldn't allocate lines in map.tiles.\n");
+		perror("Error: Couldn't allocate lines in map.tiles data.\n");
 		exit(1);
 		return (0);
 	}

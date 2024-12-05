@@ -6,7 +6,7 @@
 /*   By: jsayerza <jsayerza@student.42barcelona.fr> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 09:00:00 by jsayerza          #+#    #+#             */
-/*   Updated: 2024/12/01 18:35:01 by jsayerza         ###   ########.fr       */
+/*   Updated: 2024/12/05 16:31:06 by jsayerza         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,12 @@ void	map_error(char *s, t_vars *vars, bool do_free)
 int	map_fill_init(t_vars *vars, t_point *p)
 {
 	vars->map.fd = open(vars->map.path, O_RDONLY);
+	if (vars->map.fd < 0)
+	{
+		freer(vars);
+		perror("Error: Couldn't open map file.\n");
+		exit(1);
+	}
 	vars->map.tiles = malloc(vars->map.height * sizeof(t_tile *));
 	if (!vars->map.tiles)
 	{
